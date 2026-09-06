@@ -121,7 +121,7 @@
 
         main {
             display: grid;
-            grid-template-columns: 320px 1fr;
+            grid-template-columns: 320px minmax(0, 1fr);
             gap: 1.5rem;
             padding: 1.5rem 2rem;
             flex: 1;
@@ -143,6 +143,7 @@
             border-radius: 12px;
             padding: 1.25rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            min-width: 0;
         }
 
         .card-title {
@@ -204,6 +205,7 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            min-width: 0;
         }
 
         .url-bar-container {
@@ -233,6 +235,7 @@
             font-family: 'Fira Code', monospace;
             font-size: 0.9rem;
             outline: none;
+            min-width: 0;
         }
 
         .url-input:focus, .method-select:focus, input:focus, textarea:focus {
@@ -341,6 +344,8 @@
             overflow-x: auto;
             color: #e2e8f0;
             max-height: 350px;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
 
         .quick-fill-btn {
@@ -538,7 +543,7 @@
             const payloadInput = document.getElementById('jsonPayload');
 
             if (type === 'auth') {
-                payloadInput.value = JSON.stringify({ username: "admin", password: "password123" }, null, 2);
+                payloadInput.value = JSON.stringify({ email: "admin@gmail.com", password: "Password123" }, null, 2);
             } else if (type === 'refresh') {
                 payloadInput.value = JSON.stringify({ refresh: jwtRefreshToken || "<refresh-token>" }, null, 2);
             } else if (type === 'user_create') {
