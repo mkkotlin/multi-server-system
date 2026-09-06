@@ -1,7 +1,9 @@
 const express = require("express")
+const eventRoutes = require("./routes/eventRoutes")
+const notificationRoutes = require("./routes/notificationRoutes")
 const cors = require("cors")
 require("dotenv").config();
-const pool = require("./config/db")
+const prisma = require("./config/prisma")
 const app = express()
 
 app.use(cors())
@@ -13,15 +15,14 @@ app.get("/health", (req, res) => {
         status: "UP",
     })
 });
-app.get("/health/db", async (req, res)=> {
-    try{
-        const result = await pool.query("SELECT NOW()")
+app.get("/health/db", async (req, res) => {
+    try {
+        await prisma.$queryRaw`SELECT 1`;
         res.json({
             service: "event-server",
             database: "UP",
-            time: result.rows[0].now,
         })
-    } catch(error){
+    } catch (error) {
         console.error(error)
         res.status(500).json({
             service: "event-server",
@@ -30,6 +31,8 @@ app.get("/health/db", async (req, res)=> {
     }
 })
 
+app.use("/api/events", eventRoutes);
+app.use("/api/notifications", notificationRoutes)
 const PORT = process.env.PORT || 8001
 
 app.listen(PORT, () => {

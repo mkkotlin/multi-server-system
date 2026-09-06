@@ -2,17 +2,20 @@
   "dependencies": {
     "@angular/cdk": "^22.1.5",
     "@angular/cli": "^22.1.7",
+    "@prisma/client": "^6.19.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "pg": "^8.23.0",
+    "prisma": "^6.19.3",
     "vite": "^8.2.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
   },
-  "scripts":{
+  "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "postinstall": "prisma skills sync || exit 0"
   }
 }
