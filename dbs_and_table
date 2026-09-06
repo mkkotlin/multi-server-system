@@ -1,0 +1,62 @@
+Tables:
+    id:             uuid, pk
+    username:       varchar, unique
+    email:          varchar, unique
+    password_h:     varchar
+    role:           enum
+    is_active:      boolean
+    created_at:     timestamp
+    updated_at:     timestamp
+    role = [admin, user]
+
+projects:
+    id:             uuid, pk
+    name:           varchar
+    description:    text, nullable
+    owner_id:       uuid, fk -> user.id
+    status:         enum
+    created_at:     timestamp
+    updated_at:     timestamp
+    status = [active, archived]
+
+task:
+    id:             uuid, pk
+    project_id:     uuid, fk -> projects.id
+    title:          varchar
+    description:    text, nullable
+    assigned_to:    uuid, fk-> user.id, nullable
+    status:         enum
+    priority:       enum
+    created_at:     timestamp
+    updated_at:     timestamp
+    completed_at:   timestamp, nullable
+    status = [todi, in_progress, completed, canclled]
+    priority = [low, mediem, high]
+
+events:
+    id:             uuid, pk
+    event_type:     varchar
+    source:         varchar
+    entity_type:    varchar
+    entity_id:      uuid
+    payload:        jsonb
+    created_at:     timestamp
+    example = [task_created, task_updated, task_completed, user_created, project_created]
+
+Node.js
+notifications:
+    id:             uuid, pk
+    user_id:        uuid
+    event_id:       uuid
+    message:        text
+    is_read:        boolean
+    created_at:     timestamp
+    read_at:        timestamp,, nullable
+
+fastapi
+task_metrics:
+    id:             uuid, pk
+    task_id:        uuid
+    c_t_s:          integer, nullable (completion_time_second)
+    status_changes: integer
+    calculated_at:  timestamp

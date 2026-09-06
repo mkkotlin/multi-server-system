@@ -1,0 +1,139 @@
+# ==============================================================================
+# Comprehensive .gitignore for Multi-Server System (Node.js, Django, FastAPI)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Environment Variables & Secrets
+# ------------------------------------------------------------------------------
+Django/
+FastAPI/
+Node/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+secrets.json
+
+# ------------------------------------------------------------------------------
+# Node.js & Frontend
+# ------------------------------------------------------------------------------
+node_modules/
+jspm_packages/
+bower_components/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+.npm/
+.yarn/
+.next/
+.nuxt/
+dist/
+build/
+out/
+coverage/
+.cache/
+
+# ------------------------------------------------------------------------------
+# Python (Django & FastAPI)
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+env.bak/
+venv.bak/
+environment/
+fastAPIenv/
+
+# Python Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.noserc
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Django specific
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# ------------------------------------------------------------------------------
+# Databases & Logs
+# ------------------------------------------------------------------------------
+*.log
+*.sqlite
+*.sqlite3
+*.db
+
+# ------------------------------------------------------------------------------
+# IDEs, Editors & OS Files
+# ------------------------------------------------------------------------------
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# VS Code & JetBrains IDEs
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# ------------------------------------------------------------------------------
+# Backup & Temporary Files
+# ------------------------------------------------------------------------------
+*.bak
+*.tmp
+*.temp
+*.swp
+*~
