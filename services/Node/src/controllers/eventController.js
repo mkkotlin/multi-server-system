@@ -1,30 +1,35 @@
 const prisma = require("../config/prisma")
+const { processEvent } = require("../services/eventService");
 
 const createEvent = async (req, res) => {
-    try{
+    try {
         const {
             eventType,
             source,
             entityType,
             entityId,
             payload,
-        } = req.body
+        } = req.body;
 
         const event = await prisma.event.create({
             data: {
-            eventType,
-            source,
-            entityType,
-            entityId,
-            payload,
+                eventType,
+                source,
+                entityType,
+                entityId,
+                payload,
             },
         });
+
+        await processEvent(event);
+
         res.status(201).json(event);
-    } catch (error){
-        console.error(error)
+    } catch (error) {
+        console.error(error);
+
         res.status(500).json({
-            error: "Failed to create event"
-        })
+            error: "Failed to create event",
+        });
     }
 };
 
