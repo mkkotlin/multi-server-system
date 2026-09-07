@@ -1,6 +1,7 @@
 const express = require("express")
 const eventRoutes = require("./routes/eventRoutes")
 const notificationRoutes = require("./routes/notificationRoutes")
+const internalEventRoutes = require("./routes/internalEventRoutes")
 const cors = require("cors")
 require("dotenv").config();
 const prisma = require("./config/prisma")
@@ -8,7 +9,7 @@ const app = express()
 
 app.use(cors())
 app.use(express.json())
-
+app.use("/internal/events", internalEventRoutes)
 app.get("/health", (req, res) => {
     res.json({
         service: "event-server",

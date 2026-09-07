@@ -3,6 +3,7 @@ from tasks.models import TaskModel
 from tasks.serializers import TaskSerializer
 from django.utils import timezone
 from rest_framework.exceptions import PermissionDenied
+from core.event_service import publish_event
 
 
 
@@ -29,7 +30,16 @@ class TaskViewSet(viewsets.ModelViewSet):
             if assigned_to.id != user.id:
                 raise PermissionDenied("You can only assign tasks to yourself.")
 
-        serializer.save()
+        task = serializer.save()
+        publish_event(event_type="TASK_CREATED", entity_type="TASK", entity_id=task.id, payload={
+            "title": task.title,
+            "project_id": str(task.project_id),
+            "assigned_to": (
+                str(task.assigned_to_id) if task.assigned_to_id else None
+            ),
+            "priority": task.priority,
+            "created_by": str(user.id)
+        })
 
     def perform_update(self, serializer):
         task = serializer.save()
