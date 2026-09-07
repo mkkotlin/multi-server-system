@@ -3,47 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django API Test Studio</title>
+    <title>Multi-Server Management Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --border-color: rgba(255, 255, 255, 0.1);
+            --bg-dark: #090d16;
+            --card-bg: rgba(18, 26, 43, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --accent-cyan: #06b6d4;
-            --accent-green: #10b981;
-            --accent-orange: #f59e0b;
-            --accent-red: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --glass-glow: 0 8px 32px 0 rgba(99, 102, 241, 0.15);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%);
-            color: var(--text-main);
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 40%);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* Header / Navbar */
         header {
             background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--card-border);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -53,584 +56,927 @@
             z-index: 100;
         }
 
-        .logo-group {
+        .logo-container {
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
 
-        .logo-badge {
+        .logo-icon {
+            width: 38px;
+            height: 38px;
             background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
-            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 700;
-            padding: 0.35rem 0.65rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
         }
 
-        h1 {
+        .logo-text {
             font-size: 1.25rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .server-config {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .server-input {
-            padding: 0.35rem 0.65rem;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-main);
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            outline: none;
-            width: 220px;
-        }
-
-        .auth-status-bar {
+        .user-panel {
             display: flex;
             align-items: center;
             gap: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.5rem 1rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
             border-radius: 9999px;
-            border: 1px solid var(--border-color);
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--accent-red);
-            box-shadow: 0 0 8px var(--accent-red);
+        .badge-admin {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
         }
 
-        .status-dot.active {
-            background-color: var(--accent-green);
-            box-shadow: 0 0 8px var(--accent-green);
+        .badge-user {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-emerald), #059669);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 6px;
+        }
+
+        /* Container & Layout */
         main {
-            display: grid;
-            grid-template-columns: 320px minmax(0, 1fr);
-            gap: 1.5rem;
-            padding: 1.5rem 2rem;
             flex: 1;
-            max-width: 1600px;
-            width: 100%;
+            padding: 2rem;
+            max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
         }
 
-        .sidebar {
+        /* Login Overlay Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(12px);
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: var(--glass-glow);
+            backdrop-filter: blur(16px);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .preset-users {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .preset-btn {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: var(--text-primary);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-8 { grid-column: span 8; }
+        .col-12 { grid-column: span 12; }
+
+        @media (max-width: 1024px) {
+            .col-4, .col-6, .col-8 { grid-column: span 12; }
         }
 
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.25rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            min-width: 0;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
         }
 
         .card-title {
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        .endpoint-group {
-            display: flex;
-            flex-direction: column;
             gap: 0.5rem;
         }
 
-        .endpoint-btn {
+        /* List items */
+        .list-container {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 0.75rem;
-            padding: 0.65rem 0.85rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid transparent;
-            border-radius: 8px;
-            color: var(--text-main);
-            font-family: inherit;
-            font-size: 0.875rem;
-            cursor: pointer;
-            text-align: left;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .list-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .list-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .item-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 1rem;
             transition: all 0.2s ease;
         }
 
-        .endpoint-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--border-color);
-        }
-
-        .method-tag {
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-family: 'Fira Code', monospace;
-            width: 48px;
-            text-align: center;
-        }
-
-        .method-get { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .method-post { background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid var(--primary); }
-        .method-put { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
-        .method-patch { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
-        .method-delete { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
-
-        .workspace {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            min-width: 0;
-        }
-
-        .url-bar-container {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .method-select {
-            padding: 0.75rem 1rem;
+        .item-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
             background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-weight: 600;
-            font-family: 'Fira Code', monospace;
-            cursor: pointer;
-            outline: none;
         }
 
-        .url-input {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
-            outline: none;
-            min-width: 0;
-        }
-
-        .url-input:focus, .method-select:focus, input:focus, textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
-
-        .btn-send {
-            padding: 0.75rem 1.75rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: opacity 0.2s ease, transform 0.1s ease;
-        }
-
-        .btn-send:hover {
-            opacity: 0.9;
-        }
-
-        .btn-send:active {
-            transform: scale(0.98);
-        }
-
-        .section-tabs {
-            display: flex;
-            gap: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1rem;
-        }
-
-        .tab-btn {
-            padding: 0.5rem 0.25rem;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: var(--text-muted);
-            font-weight: 500;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-        }
-
-        label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        input[type="text"], input[type="password"], input[type="email"], select, textarea {
-            padding: 0.6rem 0.75rem;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-main);
-            font-family: inherit;
-            font-size: 0.875rem;
-            outline: none;
-        }
-
-        textarea {
-            font-family: 'Fira Code', monospace;
-            min-height: 140px;
-            resize: vertical;
-        }
-
-        .response-header-bar {
+        .item-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .item-desc {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
             margin-bottom: 0.75rem;
         }
 
-        .status-badge {
+        .item-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .priority-HIGH { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+        .priority-MEDIUM { color: var(--accent-amber); background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+        .priority-LOW { color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+
+        .status-COMPLETED { color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
+        .status-TO_DO { color: var(--accent-cyan); border: 1px solid rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.1); }
+
+        .event-item {
             font-family: 'Fira Code', monospace;
             font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
+            padding: 0.75rem;
+            border-left: 3px solid var(--primary);
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-type {
+            color: var(--accent-cyan);
             font-weight: 600;
         }
 
-        .status-2xx { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .status-4xx { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
-        .status-5xx { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
-
-        pre {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid var(--border-color);
-            padding: 1rem;
-            border-radius: 8px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-            color: #e2e8f0;
-            max-height: 350px;
-            white-space: pre-wrap;
-            word-break: break-all;
+        .notification-unread {
+            border-left: 3px solid var(--accent-amber);
+            background: rgba(245, 158, 11, 0.05);
         }
 
-        .quick-fill-btn {
-            font-size: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
         }
 
-        .quick-fill-btn:hover {
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.1);
+        .tab-btn.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--card-border);
+            color: white;
+            padding: 0.875rem 1.25rem;
+            border-radius: 8px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
+
+    <!-- Header -->
     <header>
-        <div class="logo-group">
-            <span class="logo-badge">DJANGO DRF</span>
-            <h1>API Test Studio</h1>
+        <div class="logo-container">
+            <div class="logo-icon">⚡</div>
+            <div class="logo-text">Multi-Server Control System</div>
         </div>
-
-        <div class="server-config">
-            <label for="serverBase">Backend Host:</label>
-            <input type="text" id="serverBase" class="server-input" value="http://127.0.0.1:8000">
-        </div>
-
-        <div class="auth-status-bar">
-            <div id="statusDot" class="status-dot"></div>
-            <span id="authStatusText">Not Authenticated</span>
-            <button class="quick-fill-btn" onclick="clearToken()">Clear JWT</button>
+        <div class="user-panel" id="userPanel">
+            <span class="badge badge-user" id="userRoleBadge">NOT LOGGED IN</span>
+            <span id="userNameText" style="font-weight: 500; font-size: 0.9rem;"></span>
+            <button class="btn btn-secondary btn-sm" id="logoutBtn" style="display: none;" onclick="logout()">Logout</button>
         </div>
     </header>
 
+    <!-- Main Dashboard Body -->
     <main>
-        <div class="sidebar">
-            <div class="card">
-                <div class="card-title">Authentication</div>
-                <div class="endpoint-group">
-                    <button class="endpoint-btn" onclick="selectPreset('POST', '/api/auth/token/', 'auth')">
-                        <span class="method-tag method-post">POST</span>
-                        <span>Obtain JWT Token</span>
-                    </button>
-                    <button class="endpoint-btn" onclick="selectPreset('POST', '/api/auth/token/refresh/', 'refresh')">
-                        <span class="method-tag method-post">POST</span>
-                        <span>Refresh Token</span>
-                    </button>
+
+        <!-- Quick Tabs -->
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Main Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('events')">⚡ Event Feed & Logs</button>
+            <button class="tab-btn" onclick="switchTab('notifications')">🔔 Notifications <span id="notifBadge" class="badge badge-user" style="margin-left: 4px; padding: 2px 6px;">0</span></button>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="tab-dashboard" class="dashboard-grid">
+            
+            <!-- Quick Actions Form -->
+            <div class="card col-4">
+                <div class="card-header">
+                    <div class="card-title">➕ Create Project & Task</div>
+                </div>
+
+                <!-- Create Project Form -->
+                <form id="createProjectForm" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--card-border);">
+                    <div class="form-group">
+                        <label class="form-label">New Project Name</label>
+                        <input type="text" class="form-input" id="projName" placeholder="e.g. Backend Architecture" required>
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Create Project</button>
+                </form>
+
+                <!-- Create Task Form -->
+                <form id="createTaskForm">
+                    <div class="form-group">
+                        <label class="form-label">Select Project</label>
+                        <select class="form-select" id="taskProjectSelect" required>
+                            <option value="">Loading Projects...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Task Title</label>
+                        <input type="text" class="form-input" id="taskTitle" placeholder="e.g. Build GraphQL Endpoint" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="taskPriority">
+                            <option value="HIGH">HIGH</option>
+                            <option value="MEDIUM" selected>MEDIUM</option>
+                            <option value="LOW">LOW</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Assign To User</label>
+                        <select class="form-select" id="taskAssigneeSelect">
+                            <option value="">Assign to self</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Task & Fire Event 🚀</button>
+                </form>
+            </div>
+
+            <!-- Task Board & Interactive Management -->
+            <div class="card col-8">
+                <div class="card-header">
+                    <div class="card-title">📌 Projects & Tasks Board</div>
+                    <button class="btn btn-secondary btn-sm" onclick="refreshDashboard()">🔄 Refresh</button>
+                </div>
+                
+                <div id="tasksList" class="list-container">
+                    <div class="empty-state">Loading Tasks & Projects...</div>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-title">Users Endpoints</div>
-                <div class="endpoint-group">
-                    <button class="endpoint-btn" onclick="selectPreset('GET', '/api/users/', 'user_list')">
-                        <span class="method-tag method-get">GET</span>
-                        <span>List Users</span>
-                    </button>
-                    <button class="endpoint-btn" onclick="selectPreset('POST', '/api/users/', 'user_create')">
-                        <span class="method-tag method-post">POST</span>
-                        <span>Create User</span>
-                    </button>
-                    <button class="endpoint-btn" onclick="selectPreset('GET', '/api/users/1/', 'user_detail')">
-                        <span class="method-tag method-get">GET</span>
-                        <span>User Detail</span>
-                    </button>
-                </div>
-            </div>
+        </div>
 
-            <div class="card">
-                <div class="card-title">Projects Endpoints</div>
-                <div class="endpoint-group">
-                    <button class="endpoint-btn" onclick="selectPreset('GET', '/api/projects/', 'project_list')">
-                        <span class="method-tag method-get">GET</span>
-                        <span>List Projects</span>
-                    </button>
-                    <button class="endpoint-btn" onclick="selectPreset('POST', '/api/projects/', 'project_create')">
-                        <span class="method-tag method-post">POST</span>
-                        <span>Create Project</span>
-                    </button>
-                    <button class="endpoint-btn" onclick="selectPreset('GET', '/api/projects/1/', 'project_detail')">
-                        <span class="method-tag method-get">GET</span>
-                        <span>Project Detail</span>
-                    </button>
+        <!-- Event Feed View -->
+        <div id="tab-events" class="dashboard-grid" style="display: none;">
+            <div class="card col-12">
+                <div class="card-header">
+                    <div class="card-title">⚡ Inter-Service Event Audit Stream (Node.js Event Server)</div>
+                    <button class="btn btn-secondary btn-sm" onclick="fetchEvents()">🔄 Refresh Stream</button>
                 </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Tasks Endpoints</div>
-                <div class="endpoint-group">
-                    <button class="endpoint-btn" onclick="selectPreset('GET', '/api/tasks/', 'task_list')">
-                        <span class="method-tag method-get">GET</span>
-                        <span>List Tasks</span>
-                    </button>
-                    <button class="endpoint-btn" onclick="selectPreset('POST', '/api/tasks/', 'task_create')">
-                        <span class="method-tag method-post">POST</span>
-                        <span>Create Task</span>
-                    </button>
-                    <button class="endpoint-btn" onclick="selectPreset('GET', '/api/tasks/1/', 'task_detail')">
-                        <span class="method-tag method-get">GET</span>
-                        <span>Task Detail</span>
-                    </button>
+                <div id="eventsList" class="list-container" style="max-height: 600px;">
+                    <div class="empty-state">Loading System Events...</div>
                 </div>
             </div>
         </div>
 
-        <div class="workspace">
-            <div class="card">
-                <div class="url-bar-container">
-                    <select id="httpMethod" class="method-select">
-                        <option value="GET">GET</option>
-                        <option value="POST">POST</option>
-                        <option value="PUT">PUT</option>
-                        <option value="PATCH">PATCH</option>
-                        <option value="DELETE">DELETE</option>
-                    </select>
-                    <input type="text" id="endpointUrl" class="url-input" value="/api/users/">
-                    <button class="btn-send" onclick="sendRequest()">Send Request</button>
+        <!-- Notification View -->
+        <div id="tab-notifications" class="dashboard-grid" style="display: none;">
+            <div class="card col-12">
+                <div class="card-header">
+                    <div class="card-title">🔔 My Notifications</div>
+                    <button class="btn btn-secondary btn-sm" onclick="fetchNotifications()">🔄 Refresh Notifications</button>
                 </div>
-            </div>
-
-            <div class="card">
-                <div class="section-tabs">
-                    <button class="tab-btn active" onclick="switchTab('bodyTab', this)">JSON Request Body</button>
-                    <button class="tab-btn" onclick="switchTab('headersTab', this)">Headers</button>
+                <div id="notificationsList" class="list-container" style="max-height: 600px;">
+                    <div class="empty-state">Loading Notifications...</div>
                 </div>
-
-                <div id="bodyTab" class="tab-content">
-                    <div class="form-group">
-                        <textarea id="jsonPayload" placeholder='{ "username": "admin", "password": "password" }'></textarea>
-                    </div>
-                </div>
-
-                <div id="headersTab" class="tab-content" style="display:none;">
-                    <div class="form-group">
-                        <label>Authorization Header</label>
-                        <input type="text" id="authHeader" placeholder="Bearer <your-access-token>">
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="response-header-bar">
-                    <div class="card-title" style="margin:0;">Response</div>
-                    <div id="statusBadge" class="status-badge" style="display:none;"></div>
-                </div>
-                <pre id="responseOutput">// Response JSON output will appear here...</pre>
             </div>
         </div>
+
     </main>
 
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-icon" style="margin: 0 auto 1rem auto;">🔐</div>
+                <div class="login-title">Sign In to Control System</div>
+                <div class="login-subtitle">Authenticate via Django JWT Auth Service</div>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" id="loginEmail" placeholder="kimiko@gmail.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="loginPassword" value="Password123" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Sign In</button>
+            </form>
+
+            <div class="preset-users">
+                <div class="preset-btn" onclick="fillPreset('kimiko@gmail.com', 'Password123')">
+                    <strong>User 1 (Member)</strong><br><small>kimiko@gmail.com</small>
+                </div>
+                <div class="preset-btn" onclick="fillPreset('mayank@gmail.com', 'Password123')">
+                    <strong>User 2 (Admin)</strong><br><small>mayank@gmail.com</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <script>
-        let jwtAccessToken = localStorage.getItem('jwt_access_token') || '';
-        let jwtRefreshToken = localStorage.getItem('jwt_refresh_token') || '';
+        const DJANGO_URL = 'http://127.0.0.1:8000';
+        const NODE_URL = 'http://127.0.0.1:8001';
 
-        updateAuthStatus();
+        let authToken = localStorage.getItem('token') || null;
+        let currentUser = JSON.parse(localStorage.getItem('user_info') || 'null');
 
-        function updateAuthStatus() {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('authStatusText');
-            const headerInput = document.getElementById('authHeader');
-
-            if (jwtAccessToken) {
-                dot.classList.add('active');
-                text.textContent = 'Authenticated (JWT Saved)';
-                headerInput.value = 'Bearer ' + jwtAccessToken;
+        document.addEventListener('DOMContentLoaded', () => {
+            if (authToken && currentUser) {
+                onLoginSuccess();
             } else {
-                dot.classList.remove('active');
-                text.textContent = 'Not Authenticated';
-                headerInput.value = '';
+                showLoginModal();
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('createProjectForm').addEventListener('submit', handleCreateProject);
+            document.getElementById('createTaskForm').addEventListener('submit', handleCreateTask);
+        });
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<span>${type === 'error' ? '❌' : '✅'}</span> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function fillPreset(email, password) {
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginPassword').value = password;
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const res = await fetch(`${DJANGO_URL}/api/auth/token/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!res.ok) throw new Error('Invalid credentials');
+                const data = await res.json();
+                
+                authToken = data.access;
+                localStorage.setItem('token', authToken);
+
+                // Decode JWT payload for user info
+                const payload = JSON.parse(atob(authToken.split('.')[1]));
+                currentUser = {
+                    user_id: payload.user_id,
+                    role: payload.role || 'USER',
+                    username: payload.username || email.split('@')[0]
+                };
+                localStorage.setItem('user_info', JSON.stringify(currentUser));
+
+                onLoginSuccess();
+                showToast(`Welcome back, ${currentUser.username}!`);
+            } catch (err) {
+                showToast(err.message, 'error');
             }
         }
 
-        function clearToken() {
-            localStorage.removeItem('jwt_access_token');
-            localStorage.removeItem('jwt_refresh_token');
-            jwtAccessToken = '';
-            jwtRefreshToken = '';
-            updateAuthStatus();
-        }
-
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).style.display = 'block';
-            btn.classList.add('active');
-        }
-
-        function selectPreset(method, urlPath, type) {
-            document.getElementById('httpMethod').value = method;
-            document.getElementById('endpointUrl').value = urlPath;
+        function onLoginSuccess() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('logoutBtn').style.display = 'inline-flex';
             
-            const payloadInput = document.getElementById('jsonPayload');
+            const badge = document.getElementById('userRoleBadge');
+            badge.textContent = currentUser.role;
+            badge.className = currentUser.role === 'ADMIN' ? 'badge badge-admin' : 'badge badge-user';
+            document.getElementById('userNameText').textContent = currentUser.username;
 
-            if (type === 'auth') {
-                payloadInput.value = JSON.stringify({ email: "admin@gmail.com", password: "Password123" }, null, 2);
-            } else if (type === 'refresh') {
-                payloadInput.value = JSON.stringify({ refresh: jwtRefreshToken || "<refresh-token>" }, null, 2);
-            } else if (type === 'user_create') {
-                payloadInput.value = JSON.stringify({ username: "john_doe", email: "john@example.com", password: "securepassword123" }, null, 2);
-            } else if (type === 'project_create') {
-                payloadInput.value = JSON.stringify({ name: "Alpha Project", description: "Awesome test project" }, null, 2);
-            } else if (type === 'task_create') {
-                payloadInput.value = JSON.stringify({ title: "Build Test UI", project: "<PROJECT_UUID>", status: "TO_DO", priority: "HIGH" }, null, 2);
-            } else {
-                payloadInput.value = '';
+            refreshDashboard();
+            fetchEvents();
+            fetchNotifications();
+            fetchUsersList();
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user_info');
+            authToken = null;
+            currentUser = null;
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('userRoleBadge').textContent = 'NOT LOGGED IN';
+            document.getElementById('userRoleBadge').className = 'badge badge-user';
+            document.getElementById('userNameText').textContent = '';
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('tab-dashboard').style.display = tabName === 'dashboard' ? 'grid' : 'none';
+            document.getElementById('tab-events').style.display = tabName === 'events' ? 'grid' : 'none';
+            document.getElementById('tab-notifications').style.display = tabName === 'notifications' ? 'grid' : 'none';
+
+            if (tabName === 'events') fetchEvents();
+            if (tabName === 'notifications') fetchNotifications();
+        }
+
+        async function fetchUsersList() {
+            try {
+                const res = await fetch(`${DJANGO_URL}/api/users/`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) return;
+                const users = await res.json();
+                
+                const select = document.getElementById('taskAssigneeSelect');
+                select.innerHTML = '<option value="">Assign to self</option>';
+                users.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = `${u.username} (${u.role})`;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                console.error(e);
             }
         }
 
-        async function sendRequest() {
-            const serverBase = document.getElementById('serverBase').value.replace(/\/$/, '');
-            const method = document.getElementById('httpMethod').value;
-            const endpointPath = document.getElementById('endpointUrl').value.trim();
-            const fullUrl = serverBase + (endpointPath.startsWith('/') ? endpointPath : '/' + endpointPath);
+        async function refreshDashboard() {
+            try {
+                // Fetch projects first
+                const projRes = await fetch(`${DJANGO_URL}/api/projects/`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const projects = projRes.ok ? await projRes.json() : [];
 
-            const bodyContent = document.getElementById('jsonPayload').value.trim();
-            const responseOutput = document.getElementById('responseOutput');
-            const statusBadge = document.getElementById('statusBadge');
+                const projSelect = document.getElementById('taskProjectSelect');
+                projSelect.innerHTML = projects.length === 0 
+                    ? '<option value="">No projects available (Create one)</option>' 
+                    : projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
 
-            responseOutput.textContent = 'Sending request...';
-            statusBadge.style.display = 'none';
+                // Fetch tasks
+                const taskRes = await fetch(`${DJANGO_URL}/api/tasks/`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const tasks = taskRes.ok ? await taskRes.json() : [];
 
-            const headers = {
-                'Content-Type': 'application/json'
-            };
+                renderTasks(tasks, projects);
+            } catch (err) {
+                showToast('Failed to refresh dashboard data', 'error');
+            }
+        }
 
-            const customAuth = document.getElementById('authHeader').value.trim();
-            if (customAuth) {
-                headers['Authorization'] = customAuth;
-            } else if (jwtAccessToken) {
-                headers['Authorization'] = 'Bearer ' + jwtAccessToken;
+        function renderTasks(tasks, projects) {
+            const container = document.getElementById('tasksList');
+            if (!tasks || tasks.length === 0) {
+                container.innerHTML = '<div class="empty-state">No tasks created yet. Create a task using the form on the left!</div>';
+                return;
             }
 
-            const options = { method, headers };
+            const projMap = {};
+            projects.forEach(p => projMap[p.id] = p.name);
 
-            if (['POST', 'PUT', 'PATCH'].includes(method) && bodyContent) {
-                try {
-                    options.body = bodyContent;
-                } catch (e) {
-                    alert('Invalid JSON in request body');
-                    return;
-                }
+            container.innerHTML = tasks.map(task => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <div class="item-title">${escapeHtml(task.title)}</div>
+                        <span class="badge ${task.status === 'COMPLETED' ? 'status-COMPLETED' : 'status-TO_DO'}">${task.status}</span>
+                    </div>
+                    <div class="item-desc">Project: <strong>${escapeHtml(projMap[task.project] || 'Project')}</strong></div>
+                    <div class="item-meta">
+                        <div>
+                            Priority: <span class="priority-${task.priority}">${task.priority}</span>
+                            ${task.completed_at ? ` | Completed: ${new Date(task.completed_at).toLocaleTimeString()}` : ''}
+                        </div>
+                        ${task.status !== 'COMPLETED' ? `
+                            <button class="btn btn-success btn-sm" onclick="markTaskCompleted('${task.id}')">
+                                ✓ Mark Complete
+                            </button>
+                        ` : '<span style="color: var(--accent-emerald); font-weight: 500;">Done ✓</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleCreateProject(e) {
+            e.preventDefault();
+            const name = document.getElementById('projName').value;
+            try {
+                const res = await fetch(`${DJANGO_URL}/api/projects/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name })
+                });
+
+                if (!res.ok) throw new Error('Failed to create project');
+                document.getElementById('projName').value = '';
+                showToast('Project created successfully!');
+                refreshDashboard();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function handleCreateTask(e) {
+            e.preventDefault();
+            const project = document.getElementById('taskProjectSelect').value;
+            const title = document.getElementById('taskTitle').value;
+            const priority = document.getElementById('taskPriority').value;
+            const assigned_to = document.getElementById('taskAssigneeSelect').value || undefined;
+
+            if (!project) {
+                showToast('Please create or select a project first', 'error');
+                return;
             }
 
             try {
-                const res = await fetch(fullUrl, options);
-                statusBadge.style.display = 'inline-block';
-                statusBadge.textContent = `${res.status} ${res.statusText}`;
+                const res = await fetch(`${DJANGO_URL}/api/tasks/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ project, title, priority, assigned_to })
+                });
 
-                if (res.status >= 200 && res.status < 300) {
-                    statusBadge.className = 'status-badge status-2xx';
-                } else if (res.status >= 400 && res.status < 500) {
-                    statusBadge.className = 'status-badge status-4xx';
-                } else {
-                    statusBadge.className = 'status-badge status-5xx';
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.detail || 'Failed to create task');
                 }
 
-                let data;
-                const contentType = res.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    data = await res.json();
-                    responseOutput.textContent = JSON.stringify(data, null, 2);
-
-                    // Auto-save tokens if obtained
-                    if (endpointPath.includes('/auth/token/') && data.access) {
-                        localStorage.setItem('jwt_access_token', data.access);
-                        jwtAccessToken = data.access;
-                        if (data.refresh) {
-                            localStorage.setItem('jwt_refresh_token', data.refresh);
-                            jwtRefreshToken = data.refresh;
-                        }
-                        updateAuthStatus();
-                    }
-                } else {
-                    const text = await res.text();
-                    responseOutput.textContent = text || '(No Content)';
-                }
+                document.getElementById('taskTitle').value = '';
+                showToast('Task created & TASK_CREATED event published! 🚀');
+                refreshDashboard();
+                fetchEvents();
+                fetchNotifications();
             } catch (err) {
-                statusBadge.style.display = 'inline-block';
-                statusBadge.textContent = 'ERROR';
-                statusBadge.className = 'status-badge status-5xx';
-                responseOutput.textContent = `Fetch Error: ${err.message}`;
+                showToast(err.message, 'error');
             }
+        }
+
+        async function markTaskCompleted(taskId) {
+            try {
+                const res = await fetch(`${DJANGO_URL}/api/tasks/${taskId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'COMPLETED' })
+                });
+
+                if (!res.ok) throw new Error('Failed to complete task');
+                showToast('Task completed & TASK_COMPLETED event published! 🎉');
+                refreshDashboard();
+                fetchEvents();
+                fetchNotifications();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function fetchEvents() {
+            try {
+                const res = await fetch(`${NODE_URL}/api/events/`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) return;
+                const events = await res.json();
+
+                const container = document.getElementById('eventsList');
+                if (!events || events.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No audit events published yet.</div>';
+                    return;
+                }
+
+                container.innerHTML = events.map(evt => `
+                    <div class="event-item">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span class="event-type">⚡ ${evt.eventType}</span>
+                            <span style="color: var(--text-tertiary);">${new Date(evt.createdAt).toLocaleTimeString()}</span>
+                        </div>
+                        <div>Source: <strong>${evt.source}</strong> | Entity: ${evt.entityType} (${evt.entityId.slice(0, 8)}...)</div>
+                        <div style="color: var(--text-secondary); margin-top: 4px;">Payload: ${JSON.stringify(evt.payload)}</div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function fetchNotifications() {
+            try {
+                const res = await fetch(`${NODE_URL}/api/notifications/`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) return;
+                const notifications = await res.json();
+
+                const unreadCount = notifications.filter(n => !n.isRead).length;
+                document.getElementById('notifBadge').textContent = unreadCount;
+
+                const container = document.getElementById('notificationsList');
+                if (!notifications || notifications.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No notifications found.</div>';
+                    return;
+                }
+
+                container.innerHTML = notifications.map(n => `
+                    <div class="item-card ${!n.isRead ? 'notification-unread' : ''}">
+                        <div class="item-header">
+                            <div class="item-title">🔔 ${escapeHtml(n.message)}</div>
+                            <span style="font-size: 0.75rem; color: var(--text-tertiary);">${new Date(n.createdAt).toLocaleTimeString()}</span>
+                        </div>
+                        <div class="item-meta" style="margin-top: 0.5rem;">
+                            <span>Status: ${n.isRead ? 'Read ✓' : 'Unread 🔔'}</span>
+                            ${!n.isRead ? `
+                                <button class="btn btn-secondary btn-sm" onclick="markNotificationRead('${n.id}')">
+                                    Mark as Read
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function markNotificationRead(notifId) {
+            try {
+                const res = await fetch(`${NODE_URL}/api/notifications/${notifId}/read`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) throw new Error('Failed to mark read');
+                showToast('Notification marked as read');
+                fetchNotifications();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, match => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[match]);
         }
     </script>
 </body>

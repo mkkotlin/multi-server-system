@@ -42,11 +42,36 @@ class TaskViewSet(viewsets.ModelViewSet):
         })
 
     def perform_update(self, serializer):
+        task = self.get_object()
+        old_status = task.status
+
         task = serializer.save()
+
         if task.status == TaskModel.Status.COMPLETED:
+
             if task.completed_at is None:
                 task.completed_at = timezone.now()
                 task.save(update_fields=["completed_at"])
+
+            # Publish only when the task actually becomes completed
+            if old_status != TaskModel.Status.COMPLETED:
+                publish_event(
+                    event_type="TASK_COMPLETED",
+                    entity_type="TASK",
+                    entity_id=task.id,
+                    payload={
+                        "title": task.title,
+                        "project_id": str(task.project_id),
+                        "assigned_to": (
+                            str(task.assigned_to_id)
+                            if task.assigned_to_id
+                            else None
+                        ),
+                        "completed_by": str(self.request.user.id),
+                        "completed_at": task.completed_at.isoformat(),
+                    },
+                )
+
         elif task.completed_at is not None:
             task.completed_at = None
-            task.save(update_fields=["completed_at"])
+            task.save(update_fields=["completed_at"])

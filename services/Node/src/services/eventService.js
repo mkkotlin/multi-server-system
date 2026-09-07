@@ -5,11 +5,13 @@ const processEvent = async (event) => {
         case "TASK_CREATED":
             return handleTaskCreated(event);
 
+        case "TASK_COMPLETED":
+            return handleTaskCompleted(event);
+
         default:
             console.log(
                 `No handler for event type: ${event.eventType}`
             );
-
             return null;
     }
 };
@@ -32,6 +34,25 @@ const handleTaskCreated = async (event) => {
             userId,
             eventId: event.id,
             message: `Task "${title}" was created.`,
+        },
+    });
+};
+
+const handleTaskCompleted = async (event) => {
+    const {
+        assigned_to,
+        title,
+    } = event.payload;
+
+    if (!assigned_to) {
+        return null;
+    }
+
+    return prisma.notification.create({
+        data: {
+            userId: assigned_to,
+            eventId: event.id,
+            message: `Task "${title}" was completed.`,
         },
     });
 };
