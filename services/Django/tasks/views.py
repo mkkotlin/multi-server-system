@@ -34,11 +34,13 @@ class TaskViewSet(viewsets.ModelViewSet):
         publish_event(event_type="TASK_CREATED", entity_type="TASK", entity_id=task.id, payload={
             "title": task.title,
             "project_id": str(task.project_id),
+            "owner_id": str(project.owner_id),
             "assigned_to": (
                 str(task.assigned_to_id) if task.assigned_to_id else None
             ),
             "priority": task.priority,
-            "created_by": str(user.id)
+            "created_by": str(user.id),
+            "created_at": task.created_at.isoformat(),
         })
 
     def perform_update(self, serializer):
@@ -46,6 +48,19 @@ class TaskViewSet(viewsets.ModelViewSet):
         old_status = task.status
 
         task = serializer.save()
+
+        if old_status != task.status:
+            publish_event(
+                event_type="TASK_STATUS_CHANGED",
+                entity_type="TASK",
+                entity_id=task.id,
+                payload={
+                    "title": task.title,
+                    "old_status": old_status,
+                    "new_status": task.status,
+                    "changed_by": str(self.request.user.id),
+                },
+            )
 
         if task.status == TaskModel.Status.COMPLETED:
 
@@ -68,6 +83,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                             else None
                         ),
                         "completed_by": str(self.request.user.id),
+                        "created_at": task.created_at.isoformat(),
                         "completed_at": task.completed_at.isoformat(),
                     },
                 )

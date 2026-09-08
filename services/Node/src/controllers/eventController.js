@@ -1,5 +1,6 @@
 const prisma = require("../config/prisma")
 const { processEvent } = require("../services/eventService");
+const { sendEventToAnalytics } = require("../services/analyticsService")
 
 const createEvent = async (req, res) => {
     try {
@@ -22,6 +23,7 @@ const createEvent = async (req, res) => {
         });
 
         await processEvent(event);
+        await sendEventToAnalytics(event);
 
         res.status(201).json(event);
     } catch (error) {

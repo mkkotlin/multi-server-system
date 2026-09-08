@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Server Management Dashboard</title>
+    <title>Multi-Server Management & Real-Time Analytics Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -18,6 +18,7 @@
             --accent-emerald: #10b981;
             --accent-amber: #f59e0b;
             --accent-rose: #f43f5e;
+            --accent-purple: #8b5cf6;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-tertiary: #64748b;
@@ -35,7 +36,8 @@
             background-color: var(--bg-dark);
             background-image: 
                 radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 40%);
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
@@ -44,7 +46,7 @@
 
         /* Header / Navbar */
         header {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--card-border);
             padding: 1rem 2rem;
@@ -63,14 +65,15 @@
         }
 
         .logo-icon {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            font-size: 1.2rem;
             color: white;
             box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
         }
@@ -82,6 +85,27 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        .server-status-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            font-size: 0.75rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-online { background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald); }
+        .status-offline { background: var(--accent-rose); }
 
         .user-panel {
             display: flex;
@@ -155,6 +179,28 @@
         .btn-success:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-amber {
+            background: linear-gradient(135deg, var(--accent-amber), #d97706);
+            color: white;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-amber:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-purple {
+            background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+            color: white;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-purple:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
         }
 
         .btn-sm {
@@ -322,7 +368,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-            max-height: 420px;
+            max-height: 480px;
             overflow-y: auto;
             padding-right: 0.25rem;
         }
@@ -373,6 +419,8 @@
             justify-content: space-between;
             font-size: 0.75rem;
             color: var(--text-tertiary);
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .priority-HIGH { color: var(--accent-rose); background: rgba(244, 63, 94, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
@@ -380,6 +428,7 @@
         .priority-LOW { color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
 
         .status-COMPLETED { color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
+        .status-IN_PROGRESS { color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.1); }
         .status-TO_DO { color: var(--accent-cyan); border: 1px solid rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.1); }
 
         .event-item {
@@ -407,6 +456,40 @@
             padding: 2rem;
             color: var(--text-tertiary);
             font-size: 0.875rem;
+        }
+
+        /* Analytics metrics widget */
+        .metrics-drawer {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .metric-pill {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.4rem;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .metric-val {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
+            margin-top: 2px;
         }
 
         /* Tabs */
@@ -472,8 +555,16 @@
     <header>
         <div class="logo-container">
             <div class="logo-icon">⚡</div>
-            <div class="logo-text">Multi-Server Control System</div>
+            <div class="logo-text">Multi-Server Management & Analytics</div>
         </div>
+
+        <!-- Microservices Health Status Bar -->
+        <div class="server-status-bar">
+            <span><span class="status-dot status-online" id="status-django"></span> Django :8000</span>
+            <span><span class="status-dot status-online" id="status-node"></span> Node :8001</span>
+            <span><span class="status-dot status-online" id="status-fastapi"></span> FastAPI :8002</span>
+        </div>
+
         <div class="user-panel" id="userPanel">
             <span class="badge badge-user" id="userRoleBadge">NOT LOGGED IN</span>
             <span id="userNameText" style="font-weight: 500; font-size: 0.9rem;"></span>
@@ -484,14 +575,15 @@
     <!-- Main Dashboard Body -->
     <main>
 
-        <!-- Quick Tabs -->
+        <!-- Navigation Tabs -->
         <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Main Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('events')">⚡ Event Feed & Logs</button>
+            <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Tasks & Projects Board</button>
+            <button class="tab-btn" onclick="switchTab('analytics')">📈 Real-Time Analytics (FastAPI)</button>
+            <button class="tab-btn" onclick="switchTab('events')">⚡ Event Audit Stream (Node.js)</button>
             <button class="tab-btn" onclick="switchTab('notifications')">🔔 Notifications <span id="notifBadge" class="badge badge-user" style="margin-left: 4px; padding: 2px 6px;">0</span></button>
         </div>
 
-        <!-- Dashboard View -->
+        <!-- Tab 1: Dashboard View -->
         <div id="tab-dashboard" class="dashboard-grid">
             
             <!-- Quick Actions Form -->
@@ -504,7 +596,7 @@
                 <form id="createProjectForm" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--card-border);">
                     <div class="form-group">
                         <label class="form-label">New Project Name</label>
-                        <input type="text" class="form-input" id="projName" placeholder="e.g. Backend Architecture" required>
+                        <input type="text" class="form-input" id="projName" placeholder="e.g. Backend Microservices" required>
                     </div>
                     <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Create Project</button>
                 </form>
@@ -519,7 +611,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Task Title</label>
-                        <input type="text" class="form-input" id="taskTitle" placeholder="e.g. Build GraphQL Endpoint" required>
+                        <input type="text" class="form-input" id="taskTitle" placeholder="e.g. Build GraphQL Gateway" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Priority</label>
@@ -535,15 +627,15 @@
                             <option value="">Assign to self</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Task & Fire Event 🚀</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Task & Fire Events 🚀</button>
                 </form>
             </div>
 
             <!-- Task Board & Interactive Management -->
             <div class="card col-8">
                 <div class="card-header">
-                    <div class="card-title">📌 Projects & Tasks Board</div>
-                    <button class="btn btn-secondary btn-sm" onclick="refreshDashboard()">🔄 Refresh</button>
+                    <div class="card-title">📌 Active Projects & Tasks Board</div>
+                    <button class="btn btn-secondary btn-sm" onclick="refreshDashboard()">🔄 Refresh Board</button>
                 </div>
                 
                 <div id="tasksList" class="list-container">
@@ -553,11 +645,24 @@
 
         </div>
 
-        <!-- Event Feed View -->
+        <!-- Tab 2: Analytics Metrics View (FastAPI) -->
+        <div id="tab-analytics" class="dashboard-grid" style="display: none;">
+            <div class="card col-12">
+                <div class="card-header">
+                    <div class="card-title">📈 Real-Time Analytics & Task Metrics (FastAPI Server :8002)</div>
+                    <button class="btn btn-purple btn-sm" onclick="fetchAnalyticsOverview()">🔄 Refresh Analytics</button>
+                </div>
+                <div id="analyticsContent" class="list-container" style="max-height: 600px;">
+                    <div class="empty-state">Select a task on the dashboard or refresh analytics to view real-time metrics.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Event Feed View (Node.js) -->
         <div id="tab-events" class="dashboard-grid" style="display: none;">
             <div class="card col-12">
                 <div class="card-header">
-                    <div class="card-title">⚡ Inter-Service Event Audit Stream (Node.js Event Server)</div>
+                    <div class="card-title">⚡ Inter-Service Event Audit Stream (Node.js Server :8001)</div>
                     <button class="btn btn-secondary btn-sm" onclick="fetchEvents()">🔄 Refresh Stream</button>
                 </div>
                 <div id="eventsList" class="list-container" style="max-height: 600px;">
@@ -566,11 +671,11 @@
             </div>
         </div>
 
-        <!-- Notification View -->
+        <!-- Tab 4: Notification View -->
         <div id="tab-notifications" class="dashboard-grid" style="display: none;">
             <div class="card col-12">
                 <div class="card-header">
-                    <div class="card-title">🔔 My Notifications</div>
+                    <div class="card-title">🔔 User Notifications Feed</div>
                     <button class="btn btn-secondary btn-sm" onclick="fetchNotifications()">🔄 Refresh Notifications</button>
                 </div>
                 <div id="notificationsList" class="list-container" style="max-height: 600px;">
@@ -602,12 +707,15 @@
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Sign In</button>
             </form>
 
-            <div class="preset-users">
+            <div class="preset-users" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="preset-btn" onclick="fillPreset('kimiko@gmail.com', 'Password123')">
-                    <strong>User 1 (Member)</strong><br><small>kimiko@gmail.com</small>
+                    <strong>Kimiko</strong><br><small>kimiko@gmail.com</small>
+                </div>
+                <div class="preset-btn" onclick="fillPreset('admin@gmail.com', 'Password123')">
+                    <strong>Admin</strong><br><small>admin@gmail.com</small>
                 </div>
                 <div class="preset-btn" onclick="fillPreset('mayank@gmail.com', 'Password123')">
-                    <strong>User 2 (Admin)</strong><br><small>mayank@gmail.com</small>
+                    <strong>Mayank</strong><br><small>mayank@gmail.com</small>
                 </div>
             </div>
         </div>
@@ -619,9 +727,11 @@
     <script>
         const DJANGO_URL = 'http://127.0.0.1:8000';
         const NODE_URL = 'http://127.0.0.1:8001';
+        const FASTAPI_URL = 'http://127.0.0.1:8002';
 
         let authToken = localStorage.getItem('token') || null;
         let currentUser = JSON.parse(localStorage.getItem('user_info') || 'null');
+        let currentTasksList = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             if (authToken && currentUser) {
@@ -633,7 +743,26 @@
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('createProjectForm').addEventListener('submit', handleCreateProject);
             document.getElementById('createTaskForm').addEventListener('submit', handleCreateTask);
+            
+            checkHealth();
+            setInterval(checkHealth, 15000);
         });
+
+        async function checkHealth() {
+            try {
+                const [dj, nd, fa] = await Promise.allSettled([
+                    fetch(`${DJANGO_URL}/api/users/`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
+                    fetch(`${NODE_URL}/api/events/`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
+                    fetch(`${FASTAPI_URL}/health`)
+                ]);
+
+                document.getElementById('status-django').className = `status-dot ${dj.status === 'fulfilled' ? 'status-online' : 'status-offline'}`;
+                document.getElementById('status-node').className = `status-dot ${nd.status === 'fulfilled' ? 'status-online' : 'status-offline'}`;
+                document.getElementById('status-fastapi').className = `status-dot ${fa.status === 'fulfilled' ? 'status-online' : 'status-offline'}`;
+            } catch (e) {
+                console.error(e);
+            }
+        }
 
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
@@ -718,9 +847,11 @@
             event.target.classList.add('active');
 
             document.getElementById('tab-dashboard').style.display = tabName === 'dashboard' ? 'grid' : 'none';
+            document.getElementById('tab-analytics').style.display = tabName === 'analytics' ? 'grid' : 'none';
             document.getElementById('tab-events').style.display = tabName === 'events' ? 'grid' : 'none';
             document.getElementById('tab-notifications').style.display = tabName === 'notifications' ? 'grid' : 'none';
 
+            if (tabName === 'analytics') fetchAnalyticsOverview();
             if (tabName === 'events') fetchEvents();
             if (tabName === 'notifications') fetchNotifications();
         }
@@ -748,7 +879,6 @@
 
         async function refreshDashboard() {
             try {
-                // Fetch projects first
                 const projRes = await fetch(`${DJANGO_URL}/api/projects/`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
@@ -759,11 +889,11 @@
                     ? '<option value="">No projects available (Create one)</option>' 
                     : projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
 
-                // Fetch tasks
                 const taskRes = await fetch(`${DJANGO_URL}/api/tasks/`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
                 const tasks = taskRes.ok ? await taskRes.json() : [];
+                currentTasksList = tasks;
 
                 renderTasks(tasks, projects);
             } catch (err) {
@@ -782,10 +912,10 @@
             projects.forEach(p => projMap[p.id] = p.name);
 
             container.innerHTML = tasks.map(task => `
-                <div class="item-card">
+                <div class="item-card" id="task-card-${task.id}">
                     <div class="item-header">
                         <div class="item-title">${escapeHtml(task.title)}</div>
-                        <span class="badge ${task.status === 'COMPLETED' ? 'status-COMPLETED' : 'status-TO_DO'}">${task.status}</span>
+                        <span class="badge status-${task.status}">${task.status}</span>
                     </div>
                     <div class="item-desc">Project: <strong>${escapeHtml(projMap[task.project] || 'Project')}</strong></div>
                     <div class="item-meta">
@@ -793,21 +923,157 @@
                             Priority: <span class="priority-${task.priority}">${task.priority}</span>
                             ${task.completed_at ? ` | Completed: ${new Date(task.completed_at).toLocaleTimeString()}` : ''}
                         </div>
-                        ${task.status !== 'COMPLETED' ? `
-                            <button class="btn btn-success btn-sm" onclick="markTaskCompleted('${task.id}')">
-                                ✓ Mark Complete
-                            </button>
-                        ` : `
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span style="color: var(--accent-emerald); font-weight: 500;">Done ✓</span>
-                                <button class="btn btn-secondary btn-sm" onclick="reopenTask('${task.id}')">
-                                    🔄 Reopen Task
+                        <div style="display: flex; gap: 0.4rem; align-items: center;">
+                            ${task.status === 'TO_DO' ? `
+                                <button class="btn btn-amber btn-sm" onclick="updateTaskStatus('${task.id}', 'IN_PROGRESS')">
+                                    🚀 Start
                                 </button>
-                            </div>
-                        `}
+                                <button class="btn btn-success btn-sm" onclick="updateTaskStatus('${task.id}', 'COMPLETED')">
+                                    ✓ Complete
+                                </button>
+                            ` : ''}
+                            ${task.status === 'IN_PROGRESS' ? `
+                                <button class="btn btn-success btn-sm" onclick="updateTaskStatus('${task.id}', 'COMPLETED')">
+                                    ✓ Complete
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="updateTaskStatus('${task.id}', 'TO_DO')">
+                                    ⏸ Pause
+                                </button>
+                            ` : ''}
+                            ${task.status === 'COMPLETED' ? `
+                                <button class="btn btn-secondary btn-sm" onclick="updateTaskStatus('${task.id}', 'TO_DO')">
+                                    🔄 Reopen
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-purple btn-sm" onclick="fetchTaskMetrics('${task.id}')">
+                                📊 Analytics
+                            </button>
+                        </div>
                     </div>
+                    <div id="metrics-container-${task.id}"></div>
                 </div>
             `).join('');
+        }
+
+        async function updateTaskStatus(taskId, newStatus) {
+            try {
+                const res = await fetch(`${DJANGO_URL}/api/tasks/${taskId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (!res.ok) throw new Error('Failed to update task status');
+                showToast(`Task status updated to ${newStatus} & events published! 🚀`);
+                refreshDashboard();
+                fetchEvents();
+                fetchNotifications();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function fetchTaskMetrics(taskId) {
+            const container = document.getElementById(`metrics-container-${taskId}`);
+            if (!container) return;
+
+            if (container.innerHTML !== '') {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-tertiary); margin-top: 0.5rem;">Fetching FastAPI metrics...</div>';
+
+            try {
+                const res = await fetch(`${FASTAPI_URL}/api/metrics/tasks/${taskId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (res.status === 404) {
+                    container.innerHTML = `
+                        <div class="metrics-drawer" style="grid-template-columns: 1fr;">
+                            <span style="color: var(--text-tertiary);">No metric recorded yet for this task in FastAPI Analytics.</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (!res.ok) throw new Error('Failed to fetch analytics metrics');
+                const m = await res.json();
+
+                const formatTime = (secs) => {
+                    if (secs === null || secs === undefined) return 'N/A';
+                    if (secs < 60) return `${secs}s`;
+                    const mins = Math.floor(secs / 60);
+                    const remSecs = secs % 60;
+                    return `${mins}m ${remSecs}s`;
+                };
+
+                container.innerHTML = `
+                    <div class="metrics-drawer">
+                        <div class="metric-pill">
+                            <div class="metric-label">Status Changes</div>
+                            <div class="metric-val">⚡ ${m.status_changes}</div>
+                        </div>
+                        <div class="metric-pill">
+                            <div class="metric-label">Completion Time</div>
+                            <div class="metric-val">⏱️ ${formatTime(m.completion_time_seconds)}</div>
+                        </div>
+                        <div class="metric-pill">
+                            <div class="metric-label">Last Calculated</div>
+                            <div class="metric-val" style="font-size: 0.75rem;">${new Date(m.calculated_at).toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                container.innerHTML = `<div style="font-size: 0.8rem; color: var(--accent-rose); margin-top: 0.5rem;">${escapeHtml(err.message)}</div>`;
+            }
+        }
+
+        async function fetchAnalyticsOverview() {
+            const container = document.getElementById('analyticsContent');
+            container.innerHTML = '<div class="empty-state">Fetching analytics summary from FastAPI server...</div>';
+
+            try {
+                const res = await fetch(`${FASTAPI_URL}/api/metrics/summary`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!res.ok) throw new Error('Failed to fetch analytics summary');
+                const summary = await res.json();
+
+                const avgTime = summary.average_completion_time_seconds !== null
+                    ? (summary.average_completion_time_seconds < 60 
+                        ? `${summary.average_completion_time_seconds.toFixed(1)}s`
+                        : `${(summary.average_completion_time_seconds / 60).toFixed(1)}m`)
+                    : 'N/A';
+
+                container.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="card" style="text-align: center; padding: 1.25rem;">
+                            <div class="metric-label">Total Tasks</div>
+                            <div class="metric-val" style="font-size: 1.6rem;">📌 ${summary.total_tasks}</div>
+                        </div>
+                        <div class="card" style="text-align: center; padding: 1.25rem;">
+                            <div class="metric-label">Completed Tasks</div>
+                            <div class="metric-val" style="font-size: 1.6rem; color: var(--accent-emerald);">✓ ${summary.completed_tasks}</div>
+                        </div>
+                        <div class="card" style="text-align: center; padding: 1.25rem;">
+                            <div class="metric-label">Avg Completion Time</div>
+                            <div class="metric-val" style="font-size: 1.6rem; color: var(--accent-cyan);">⏱️ ${avgTime}</div>
+                        </div>
+                        <div class="card" style="text-align: center; padding: 1.25rem;">
+                            <div class="metric-label">Total Status Transitions</div>
+                            <div class="metric-val" style="font-size: 1.6rem; color: var(--accent-amber);">⚡ ${summary.total_status_changes}</div>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                container.innerHTML = `<div class="empty-state" style="color: var(--accent-rose);">${escapeHtml(err.message)}</div>`;
+            }
         }
 
         async function handleCreateProject(e) {
@@ -861,48 +1127,6 @@
 
                 document.getElementById('taskTitle').value = '';
                 showToast('Task created & TASK_CREATED event published! 🚀');
-                refreshDashboard();
-                fetchEvents();
-                fetchNotifications();
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
-        }
-
-        async function markTaskCompleted(taskId) {
-            try {
-                const res = await fetch(`${DJANGO_URL}/api/tasks/${taskId}/`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ status: 'COMPLETED' })
-                });
-
-                if (!res.ok) throw new Error('Failed to complete task');
-                showToast('Task completed & TASK_COMPLETED event published! 🎉');
-                refreshDashboard();
-                fetchEvents();
-                fetchNotifications();
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
-        }
-
-        async function reopenTask(taskId) {
-            try {
-                const res = await fetch(`${DJANGO_URL}/api/tasks/${taskId}/`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ status: 'TO_DO' })
-                });
-
-                if (!res.ok) throw new Error('Failed to reopen task');
-                showToast('Task reopened & TASK_REOPENED event published! 🔄');
                 refreshDashboard();
                 fetchEvents();
                 fetchNotifications();
