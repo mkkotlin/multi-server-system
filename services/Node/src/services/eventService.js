@@ -8,6 +8,9 @@ const processEvent = async (event) => {
         case "TASK_COMPLETED":
             return handleTaskCompleted(event);
 
+        case "TASK_REOPENED":
+            return handleTaskOpened(event)
+
         default:
             console.log(
                 `No handler for event type: ${event.eventType}`
@@ -56,6 +59,27 @@ const handleTaskCompleted = async (event) => {
         },
     });
 };
+
+
+const handleTaskOpened = async (event) =>{
+    const {
+        assigned_to,
+        title,
+    } = event.payload;
+
+    if (!assigned_to){
+        return null;
+    }
+
+    return prisma.notification.create({
+        data: {
+            userId: assigned_to,
+            eventId: event.id,
+            message: `Task "${title}" was reopened`,
+        },
+    });
+};
+
 
 module.exports = {
     processEvent,

@@ -72,6 +72,22 @@ class TaskViewSet(viewsets.ModelViewSet):
                     },
                 )
 
-        elif task.completed_at is not None:
-            task.completed_at = None
-            task.save(update_fields=["completed_at"])
+        elif old_status == TaskModel.Status.COMPLETED:
+            if task.completed_at is not None:
+                task.completed_at = None
+                task.save(update_fields=["completed_at"])
+
+            publish_event(
+                event_type="TASK_REOPENED",
+                entity_type="TASK",
+                entity_id=task.id,
+                payload={
+                    "title": task.title,
+                    "project_id": str(task.project_id),
+                    "assigned_to": (
+                        str(task.assigned_to_id) if task.assigned_to_id else None
+                    ),
+                    "reopen_by": str(self.request.user.id),
+                    "status": task.status,
+                },
+            )

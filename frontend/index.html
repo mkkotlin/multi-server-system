@@ -797,7 +797,14 @@
                             <button class="btn btn-success btn-sm" onclick="markTaskCompleted('${task.id}')">
                                 ✓ Mark Complete
                             </button>
-                        ` : '<span style="color: var(--accent-emerald); font-weight: 500;">Done ✓</span>'}
+                        ` : `
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: var(--accent-emerald); font-weight: 500;">Done ✓</span>
+                                <button class="btn btn-secondary btn-sm" onclick="reopenTask('${task.id}')">
+                                    🔄 Reopen Task
+                                </button>
+                            </div>
+                        `}
                     </div>
                 </div>
             `).join('');
@@ -875,6 +882,27 @@
 
                 if (!res.ok) throw new Error('Failed to complete task');
                 showToast('Task completed & TASK_COMPLETED event published! 🎉');
+                refreshDashboard();
+                fetchEvents();
+                fetchNotifications();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function reopenTask(taskId) {
+            try {
+                const res = await fetch(`${DJANGO_URL}/api/tasks/${taskId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'TO_DO' })
+                });
+
+                if (!res.ok) throw new Error('Failed to reopen task');
+                showToast('Task reopened & TASK_REOPENED event published! 🔄');
                 refreshDashboard();
                 fetchEvents();
                 fetchNotifications();
