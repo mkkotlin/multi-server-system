@@ -5,6 +5,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![NodeJS](https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express.js-4.x-000000?style=for-the-badge&logo=express&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-D71100?style=for-the-badge&logo=sqlalchemy&logoColor=white)
@@ -20,7 +21,7 @@ A distributed microservices system combining **Django**, **Node.js Express**, an
 
 ```mermaid
 graph TD
-    Client["🌐 Web UI Frontend (Port 8000 Static / File)"]
+    Client["🌐 Web UI Frontend (Port 8000 Static / Browser)"]
     
     subgraph Services["Microservices Cluster"]
         Django["🛡️ Django REST Server (:8000)<br/>Auth, Users, Projects, Tasks"]
@@ -28,7 +29,8 @@ graph TD
         FastAPI["📈 FastAPI Analytics Server (:8002)<br/>Real-Time Metrics Engine, SQLAlchemy"]
     end
     
-    Database[(🐘 PostgreSQL DB: triserver)]
+    SQLite[(📁 SQLite DB: db.sqlite3)]
+    Postgres[(🐘 PostgreSQL DB: triserver)]
     
     Client -->|User API Requests + JWT| Django
     Client -->|User Analytics + JWT| FastAPI
@@ -36,17 +38,18 @@ graph TD
     Django -->|1. Lifecycle Events| Node
     Node -->|2. Forward Event + X-Service-Key| FastAPI
     
-    Django -->|ORM| Database
-    Node -->|Prisma| Database
-    FastAPI -->|SQLAlchemy| Database
+    Django -->|Django ORM| SQLite
+    Node -->|Prisma ORM| Postgres
+    FastAPI -->|SQLAlchemy| Postgres
 ```
 
 ---
 
-## 🧩 Microservices Overview
+## 🧩 Microservices Overview & Database Architecture
 
 ### 1. 🛡️ Django Task Management Server (`:8000`)
 * **Path**: [`services/Django`](file:///f:/multi-server-system/services/Django)
+* **Database**: **SQLite** (`services/Django/db.sqlite3`)
 * **Responsibility**: System source of truth for Users, Projects, and Task state transitions.
 * **Key Features**:
   - Central JWT Authentication Authority (`/api/auth/token/`).
@@ -56,6 +59,7 @@ graph TD
 
 ### 2. ⚡ Node.js Event Server (`:8001`)
 * **Path**: [`services/Node`](file:///f:/multi-server-system/services/Node)
+* **Database**: **PostgreSQL** (`triserver` via Prisma ORM)
 * **Responsibility**: Asynchronous event ingestion, notification distribution, and analytics relay.
 * **Key Features**:
   - Express.js server backed by Prisma ORM.
@@ -65,6 +69,7 @@ graph TD
 
 ### 3. 📈 FastAPI Analytics Server (`:8002`)
 * **Path**: [`services/FastAPI`](file:///f:/multi-server-system/services/FastAPI)
+* **Database**: **PostgreSQL** (`triserver` via SQLAlchemy 2.0 & Alembic)
 * **Responsibility**: Real-time analytical processing, completion time calculation, and status transition metrics.
 * **Key Features**:
   - Dual-Security Architecture (`X-Service-Key` for service ingestion vs `Bearer JWT` for frontend metrics).
@@ -79,6 +84,16 @@ graph TD
   - Real-time health monitoring of all 3 microservices.
   - One-click task workflow buttons (*Start*, *Complete*, *Pause*, *Reopen*).
   - Dynamic **Analytics Drawer** per task and dedicated **Real-Time Analytics Summary** tab.
+
+---
+
+## 💾 Database Strategy Matrix
+
+| Service | Database | Driver / ORM | Database Name / Location | Purpose |
+| :--- | :--- | :--- | :--- | :--- |
+| **Django** | **SQLite** | Django ORM | `services/Django/db.sqlite3` | Core user, project, and task domain models |
+| **Node.js** | **PostgreSQL** | Prisma ORM | `localhost:5432/triserver` | Event stream logs & user notifications |
+| **FastAPI** | **PostgreSQL** | SQLAlchemy 2.0 | `localhost:5432/triserver` | Real-time task completion & transition metrics |
 
 ---
 

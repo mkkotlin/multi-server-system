@@ -3,7 +3,7 @@
 **Service Name**: Django Task Management Service  
 **Location**: [`services/Django`](file:///f:/multi-server-system/services/Django)  
 **Port**: `8000`  
-**Framework**: Django REST Framework + PostgreSQL (`triserver`)  
+**Framework**: Django REST Framework + SQLite (`db.sqlite3`)  
 
 ---
 
@@ -64,6 +64,6 @@ When task mutations occur in [`tasks/views.py`](file:///f:/multi-server-system/s
 
 ## 5. Audit Verification & Status
 
-- **Database Integrity**: PostgreSQL connection verified (`triserver`).
+- **Database Integrity**: SQLite connection verified (`db.sqlite3`).
 - **RBAC Unit Scenarios**: Pass (`403 Forbidden` on unauthorized project access).
 - **CORS Setup**: `corsheaders` configured for frontend cross-origin requests.
