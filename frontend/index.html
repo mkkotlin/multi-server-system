@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Info: CSS written by AI, and some JS. -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +9,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        /* ==========================================
+           INFO: CSS written by AI
+           ========================================== */
+        .ai-info-banner {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+            border-bottom: 1px solid rgba(6, 182, 212, 0.3);
+            color: var(--accent-cyan);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            backdrop-filter: blur(8px);
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
         :root {
             --bg-dark: #090d16;
             --card-bg: rgba(18, 26, 43, 0.75);
@@ -551,6 +570,12 @@
 </head>
 <body>
 
+    <!-- Info Banner -->
+    <div class="ai-info-banner">
+        <span>ℹ️</span>
+        <span><strong>Info:</strong> CSS written by AI, and some JS.</span>
+    </div>
+
     <!-- Header -->
     <header>
         <div class="logo-container">
@@ -725,6 +750,9 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
+        /* ==========================================
+           INFO: Some JS written by AI
+           ========================================== */
         const DJANGO_URL = 'http://127.0.0.1:8000';
         const NODE_URL = 'http://127.0.0.1:8001';
         const FASTAPI_URL = 'http://127.0.0.1:8002';
