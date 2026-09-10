@@ -134,3 +134,4 @@ desktop.ini
 *.temp
 *.swp
 *~
+db_manager/

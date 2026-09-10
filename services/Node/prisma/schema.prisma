@@ -37,3 +37,15 @@ model Notification {
 
   @@map("notifications")
 }
+
+model TaskMetric {
+  id                    String    @id @default(uuid()) @db.Uuid
+  taskId                String    @map("task_id") @db.Uuid
+  ownerId               String?   @map("owner_id") @db.Uuid
+  createdAt             DateTime? @map("created_at")
+  completionTimeSeconds Int?      @map("completion_time_seconds")
+  statusChanges         Int       @default(0) @map("status_changes")
+  calculatedAt          DateTime  @map("calculated_at")
+
+  @@map("task_metrics")
+}
